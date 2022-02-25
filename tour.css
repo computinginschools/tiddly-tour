@@ -3,6 +3,7 @@
   box-shadow: 0 0 0 99999px rgba(0, 0, 0, .8),
               inset 0 0 2px 0 #000;
   z-index:10000 !important;
+  border-radius:5px;
 }
 
 .ttour-wrapper {
