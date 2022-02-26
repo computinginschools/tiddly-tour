@@ -19,6 +19,29 @@ window.Tour = (function(my) {
     this.showStep(this.steps[this.current = 0]);
   };
 
+  my.prototype.end = function() {
+    // Remove the tour container
+    this.container.removeChild(this.el);
+    this.el = null;
+  };
+
+  my.prototype.showOverlay = function() {
+    this.el = this.el || createShadow.call(this);
+    this.container.appendChild(this.el);
+  };
+
+  my.prototype.showStep = function(step) {
+    var position = elementPosition(step.element, this.container, this.padding);
+    var wrapper = getElement(this, '.'+WRAPPER);
+    var tip = getElement(this, '.'+TIP);
+    if(!!tip) {
+        wrapper.removeChild(tip);
+    }
+    tip = createTip.call(this, step, step.position || "bottom");
+    wrapper.appendChild(tip);
+    setPosition(getElement(this, '.' + OVERLAY), position);
+  };
+
   my.prototype.goToStep = function(index) {
     this.current = index;
     this.showStep(this.steps[this.current])
@@ -34,26 +57,13 @@ window.Tour = (function(my) {
     this.showStep(step);
   };
 
-  my.prototype.showStep = function(step) {
-    var position = elementPosition(step.element, this.container, this.padding);
-    var wrapper = getElement(this, '.'+WRAPPER);
-    var tip = getElement(this, '.'+TIP);
-    if(!!tip) {
-        wrapper.removeChild(tip);
+  var newElement = function(tag, attributes, children) {
+    var el = document.createElement(tag);
+    set.call(el, attributes);
+    for(var i = 0; i < (children || []).length; i++) {
+      el.appendChild(children[i]);
     }
-    tip = createTip.call(this, step, step.position || "bottom");
-    wrapper.appendChild(tip);
-    setPosition(getElement(this, '.' + OVERLAY), position);
-  };
-
-  my.prototype.showOverlay = function() {
-    this.el = this.el || createShadow.call(this);
-    this.container.appendChild(this.el);
-  };
-
-  my.prototype.end = function() {
-    this.container.removeChild(this.el);
-    this.el = null;
+    return el;
   };
 
   var getElement = function(self, selector) {
@@ -189,19 +199,10 @@ window.Tour = (function(my) {
     };
   };
 
-  var newElement = function(tag, attributes, children) {
-    var el = document.createElement(tag);
-    set.call(el, attributes);
-    for(var i = 0; i < (children || []).length; i++) {
-      el.appendChild(children[i]);
-    }
-    return el;
-  };
-
   var defaults = function() {
     return {
       steps: [],
-      padding: 12,
+      padding: 6,
       container: document.body,
       next: "Next",
       done: "Done",
